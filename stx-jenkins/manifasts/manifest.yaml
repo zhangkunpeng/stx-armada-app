@@ -52,6 +52,8 @@ data:
       adminPassword: 99cloud@SH
       serviceType: NodePort
       nodePort: 30001
+      podLabels:
+        release: devops-jenkins
       ingress:
         enabled: false
         # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
