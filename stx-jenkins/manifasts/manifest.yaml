@@ -2,9 +2,9 @@
 schema: armada/Manifest/v1
 metadata:
   schema: metadata/Document/v1
-  name: cicd-armada-manifest
+  name: jenkins-armada-manifest
 data:
-  release_prefix: cicd
+  release_prefix: devops
   chart_groups:
     - jenkins
 ---
@@ -27,9 +27,9 @@ data:
   release: jenkins
   namespace: devops
   wait:
-    timeout: 600
+    timeout: 1200
     labels:
-      release: cicd-jenkins
+      release: devops-jenkins
   test:
     enabled: false
   install:
@@ -40,10 +40,10 @@ data:
       delete:
         - type: job
           labels:
-            release: cicd-jenkins
+            release: devops-jenkins
         - type: pod
           labels:
-            release: cicd-jenkins
+            release: devops-jenkins
             component: test
   values:
     master:

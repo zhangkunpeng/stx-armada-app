@@ -575,3 +575,9 @@ backup:
   # Ref: https://github.com/maorfr/skbn
   destination: "s3://jenkins-data/backup"
 checkDeprecation: true
+
+images:
+  tags: 
+    master: jenkins/jenkins:lts
+    agent: jenkins/jnlp-slave:3.27-1
+    agent1: cnych/jenkins:jnlp6
