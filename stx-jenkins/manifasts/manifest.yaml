@@ -1,0 +1,92 @@
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: cicd-armada-manifest
+data:
+  release_prefix: cicd
+  chart_groups:
+    - jenkins
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: jenkins
+data:
+  description: "Deploy Jenkins"
+  sequenced: true
+  chart_group:
+    - jenkins
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: jenkins
+data:
+  chart_name: jenkins
+  release: jenkins
+  namespace: devops
+  wait:
+    timeout: 600
+    labels:
+      release: cicd-jenkins
+  test:
+    enabled: false
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - type: job
+          labels:
+            release: cicd-jenkins
+        - type: pod
+          labels:
+            release: cicd-jenkins
+            component: test
+  values:
+    master:
+      namespaceOverride: devops
+      slaveKubernetesNamespace: devops
+      adminPassword: 99cloud@SH
+      serviceType: NodePort
+      nodePort: 30001
+      ingress:
+        enabled: false
+        # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
+        apiVersion: "networking.k8s.io/v1beta1"
+        labels: {}
+        annotations:
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
+          nginx.ingress.kubernetes.io/rewrite-target: /
+          nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+        # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
+        # path: "/jenkins"
+        # configures the hostname e.g. jenkins.example.com
+        hostName: jenkins.devops.svc.cluster.local
+    agent:
+      enabled: true
+      image: "cnych/jenkins"
+      tag: "jnlp6"
+      volumes:
+      - type: HostPath
+        hostPath: '/var/run/docker.sock'
+        mountPath: '/var/run/docker.sock'
+      - type: HostPath
+        hostPath: '/root/.kube'
+        mountPath: '/root/.kube'
+    images:
+      tags: 
+        master: jenkins/jenkins:lts
+        agent: jenkins/jnlp-slave:3.27-1
+        agent1: cnych/jenkins:jnlp6
+  source:
+    type: tar
+    location: http://172.17.0.1:8080/helm_charts/starlingx/jenkins-1.9.8.tgz
+    subpath: jenkins
+    reference: master
+  dependencies: []
