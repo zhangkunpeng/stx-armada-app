@@ -27,7 +27,7 @@ data:
   release: jenkins
   namespace: devops
   wait:
-    timeout: 1200
+    timeout: 3600
     labels:
       release: devops-jenkins
   test:
