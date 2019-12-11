@@ -1,0 +1,5 @@
+kubernetes:1.18.2
+workflow-job:2.33
+workflow-aggregator:2.6
+credentials-binding:1.19
+gitlab-plugin:1.5.13
