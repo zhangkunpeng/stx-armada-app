@@ -122,6 +122,7 @@ master:
   #     value: "http://192.168.64.1:3128"
   # Set min/max heap here if needed with:
   # javaOpts: "-Xms512m -Xmx512m"
+  javaOpts: "-Djenkins.install.runSetupWizard=false"
   # jenkinsOpts: ""
   # jenkinsUrl: ""
   # If you set this prefix and use ingress controller then you might want to set the ingress path below
