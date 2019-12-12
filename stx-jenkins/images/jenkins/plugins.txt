@@ -4,10 +4,8 @@ workflow-aggregator
 credentials-binding
 git
 gitlab-plugin
-dashboard-view
 antisamy-markup-formatter
 token-macro
-build-timeout
 resource-disposer
 ws-cleanup
 ant
@@ -26,4 +24,3 @@ email-ext
 locale
 localization-support
 localization-zh-cn
-configuration-as-code
