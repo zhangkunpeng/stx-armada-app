@@ -31,7 +31,7 @@ spec:
           serviceAccountName: {{ template "jenkins.fullname" . }}-backup
           containers:
           - name: jenkins-backup
-            image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+            image: {{ .Values.images.tags.backup }}
             command: ["kube-tasks"]
             args:
             - simple-backup

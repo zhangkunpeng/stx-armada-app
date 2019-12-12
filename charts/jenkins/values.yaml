@@ -65,9 +65,6 @@ master:
         hYAzODo1Jt59pcqqKJEas0C/lFJEB3frw4ImNx5fNlJYOpx+ijfQs9m39CevDq0=
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-master"
-  image: "jenkins/jenkins"
-  tag: "lts"
-  imagePullPolicy: "Always"
   imagePullSecretName:
   # Optionally configure lifetime for master-container
   lifecycle:
@@ -208,18 +205,6 @@ master:
   # - name: BuildInfoProxy
   #   port: 9000
 
-  # List of plugins to be install during Jenkins master start
-  installPlugins:
-    - kubernetes:1.21.2
-    - workflow-job:2.36
-    - workflow-aggregator:2.6
-    - credentials-binding:1.20
-    - git:4.0.0
-
-  # Enable to always override the installed plugins with the values of 'master.installPlugins' on upgrade or redeployment.
-  # overwritePlugins: true
-  # Enable HTML parsing using OWASP Markup Formatter Plugin (antisamy-markup-formatter), useful with ghprb plugin.
-  # The plugin is not installed by default, please update master.installPlugins.
   enableRawHtmlMarkupFormatter: false
   # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
   scriptApproval: []
@@ -272,8 +257,6 @@ master:
       # over SSH to reapply config when changes to the configScripts are detected.  The admin user (or account you specify in
       # master.adminUser) will have a random SSH private key (RSA 4096) assigned unless you specify adminSshKey.  This will be saved to a k8s secret.
       enabled: false
-      image: kiwigrid/k8s-sidecar:0.1.20
-      imagePullPolicy: IfNotPresent
       resources: {}
         #   limits:
         #     cpu: 100m
@@ -370,7 +353,7 @@ master:
     annotations: {}
     # path: "/jenkins"
 
-  additionalConfig: {}
+  enableXmlConfig: {}
 
   # master.hostAliases allows for adding entries to Pod /etc/hosts:
   # https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -406,8 +389,6 @@ master:
 
 agent:
   enabled: true
-  image: "jenkins/jnlp-slave"
-  tag: "3.27-1"
   customJenkinsLabels: []
   # name of the secret to be used for image pulling
   imagePullSecretName:
@@ -540,9 +521,6 @@ backup:
     # Example for authorization to AWS S3 using kube2iam
     # Can also be done using environment variables
     # iam.amazonaws.com/role: "jenkins"
-  image:
-    repository: "maorfr/kube-tasks"
-    tag: "0.2.0"
   # Additional arguments for kube-tasks
   # Ref: https://github.com/maorfr/kube-tasks#simple-backup
   extraArgs: []
@@ -578,6 +556,8 @@ checkDeprecation: true
 
 images:
   tags: 
-    master: jenkins/jenkins:lts
+    master: kunpeng4code/jenkins:lts
     agent: jenkins/jnlp-slave:3.27-1
-    agent1: cnych/jenkins:jnlp6
+    sidecar: kiwigrid/k8s-sidecar:0.1.20
+    backup: "maorfr/kube-tasks:0.2.0"
+  pullPolicy: IfNotPresent

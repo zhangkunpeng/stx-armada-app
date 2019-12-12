@@ -14,7 +14,7 @@
         {{- end }}
 
         {{- if .Values.Master.ImagePullPolicy }}
-           {{ fail "`Master.ImagePullPolicy` does no longer exist. It has been renamed to `master.imagePullPolicy`" }}
+           {{ fail "`Master.ImagePullPolicy` does no longer exist. It has been renamed to `images.pullPolicy`" }}
         {{- end }}
 
         {{- if .Values.Master.ImagePullSecret }}

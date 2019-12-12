@@ -1,11 +1,13 @@
 apiVersion: v1
-appVersion: lts
+appVersion: stx-lts
 description: Open source continuous integration server. It supports multiple SCM tools
   including CVS, Subversion and Git. It can execute Apache Ant and Apache Maven-based
   projects as well as arbitrary scripts.
 home: https://jenkins.io/
 icon: https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png
 maintainers:
+- email: zhang.kunpeng@99cloud.net
+  name: ZhangKunpeng
 - email: lachlan.evenson@microsoft.com
   name: lachie83
 - email: viglesias@google.com
@@ -22,4 +24,4 @@ sources:
 - https://github.com/jenkinsci/docker-jnlp-slave
 - https://github.com/maorfr/kube-tasks
 - https://github.com/jenkinsci/configuration-as-code-plugin
-version: 1.9.8
+version: 19.8.0

@@ -27,7 +27,7 @@ data:
   release: jenkins
   namespace: devops
   wait:
-    timeout: 3600
+    timeout: 600
     labels:
       release: devops-jenkins
   test:
@@ -71,9 +71,6 @@ data:
         # configures the hostname e.g. jenkins.example.com
         hostName: jenkins.devops.svc.cluster.local
     agent:
-      enabled: true
-      image: "cnych/jenkins"
-      tag: "jnlp6"
       volumes:
       - type: HostPath
         hostPath: '/var/run/docker.sock'
@@ -83,12 +80,10 @@ data:
         mountPath: '/root/.kube'
     images:
       tags: 
-        master: jenkins/jenkins:lts
-        agent: jenkins/jnlp-slave:3.27-1
-        agent1: cnych/jenkins:jnlp6
+        agent: cnych/jenkins:jnlp6
   source:
     type: tar
-    location: http://172.17.0.1:8080/helm_charts/starlingx/jenkins-1.9.8.tgz
+    location: http://172.17.0.1:8080/helm_charts/starlingx/jenkins-19.8.0.tgz
     subpath: jenkins
     reference: master
   dependencies: []

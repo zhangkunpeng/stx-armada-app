@@ -17,11 +17,7 @@ data:
     <?xml version='1.0' encoding='UTF-8'?>
     <hudson>
       <disabledAdministrativeMonitors/>
-{{- if .Values.master.imageTag }}
-      <version>{{ .Values.master.imageTag }}</version>
-{{- else }}
-      <version>{{ .Values.master.tag }}</version>
-{{- end }}
+      <version>lts</version>
       <numExecutors>{{ .Values.master.numExecutors }}</numExecutors>
       <mode>NORMAL</mode>
       <useSecurity>{{ .Values.master.useSecurity }}</useSecurity>
@@ -73,11 +69,7 @@ data:
               <containers>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                   <name>{{ .Values.agent.sideContainerName }}</name>
-{{- if .Values.agent.imageTag }}
-                  <image>{{ .Values.agent.image }}:{{ .Values.agent.imageTag }}</image>
-{{- else }}
-                  <image>{{ .Values.agent.image }}:{{ .Values.agent.tag }}</image>
-{{- end }}
+                  <image>{{ .Values.images.tags.agent }}</image>
 {{- if .Values.agent.privileged }}
                   <privileged>true</privileged>
 {{- else }}
@@ -247,14 +239,6 @@ data:
     # remove all plugins from shared volume
     rm -rf /var/jenkins_home/plugins/*
 {{- end }}
-{{- if .Values.master.installPlugins }}
-    # Install missing plugins
-    cp /var/jenkins_config/plugins.txt /var/jenkins_home;
-    rm -rf /usr/share/jenkins/ref/plugins/*.lock
-    /usr/local/bin/install-plugins.sh `echo $(cat /var/jenkins_home/plugins.txt)`;
-    # Copy plugins to shared volume
-    yes n | cp -i /usr/share/jenkins/ref/plugins/* /var/jenkins_plugins/;
-{{- end }}
 {{- if .Values.master.scriptApproval }}
     yes n | cp -i /var/jenkins_config/scriptapproval.xml /var/jenkins_home/scriptApproval.xml;
 {{- end }}
@@ -301,22 +285,6 @@ data:
   {{ $key }}.yaml: |-
 {{ tpl $val $| indent 4 }}
 {{- end }}
-{{- end }}
-{{- end }}
-  plugins.txt: |-
-{{- if .Values.master.installPlugins }}
-{{- range $index, $val := .Values.master.installPlugins }}
-{{ $val | indent 4 }}
-{{- end }}
-{{- if .Values.master.JCasC.enabled }}
-  {{- if not (contains "configuration-as-code" (quote .Values.master.installPlugins)) }}
-    configuration-as-code:{{ .Values.master.JCasC.pluginVersion }}
-  {{- end }}
-  {{- if semverCompare "<=1.19" (printf "%v" .Values.master.JCasC.pluginVersion) }}
-    {{- if not (contains "configuration-as-code-support" (quote .Values.master.installPlugins)) }}
-    configuration-as-code-support:{{ .Values.master.JCasC.supportPluginVersion }}
-    {{- end }}
-  {{- end }}
 {{- end }}
 {{- end }}
 {{ else }}

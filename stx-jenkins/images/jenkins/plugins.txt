@@ -2,6 +2,7 @@ kubernetes
 workflow-job
 workflow-aggregator
 credentials-binding
+git
 gitlab-plugin
 dashboard-view
 antisamy-markup-formatter
@@ -25,3 +26,4 @@ email-ext
 locale
 localization-support
 localization-zh-cn
+configuration-as-code

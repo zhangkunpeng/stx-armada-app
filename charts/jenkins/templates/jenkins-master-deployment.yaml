@@ -84,12 +84,8 @@ spec:
 {{ tpl (toYaml .Values.master.customInitContainers) . | indent 8 }}
 {{- end }}
         - name: "copy-default-config"
-{{- if .Values.master.imageTag }}
-          image: "{{ .Values.master.image }}:{{ .Values.master.imageTag }}"
-{{- else }}
-          image: "{{ .Values.master.image }}:{{ .Values.master.tag }}"
-{{- end }}
-          imagePullPolicy: "{{ .Values.master.imagePullPolicy }}"
+          image: "{{ .Values.images.tags.master }}"
+          imagePullPolicy: "{{ .Values.images.pullPolicy }}"
           command: [ "sh", "/var/jenkins_config/apply_config.sh" ]
           env:
           {{- if .Values.master.useSecurity }}
@@ -138,20 +134,10 @@ spec:
               name: jenkins-secrets
               readOnly: true
             {{- end }}
-            {{- if .Values.master.installPlugins }}
-            - mountPath: /usr/share/jenkins/ref/plugins
-              name: plugins
-            - mountPath: /var/jenkins_plugins
-              name: plugin-dir
-            {{- end }}
       containers:
         - name: jenkins
-{{- if .Values.master.imageTag }}
-          image: "{{ .Values.master.image }}:{{ .Values.master.imageTag }}"
-{{- else }}
-          image: "{{ .Values.master.image }}:{{ .Values.master.tag }}"
-{{- end }}
-          imagePullPolicy: "{{ .Values.master.imagePullPolicy }}"
+          image: "{{ .Values.images.tags.master }}"
+          imagePullPolicy: "{{ .Values.images.pullPolicy }}"
           {{- if .Values.master.httpsKeyStore.enable }}
           {{- $httpsJKSFilePath :=  printf "%s/%s" .Values.master.httpsKeyStore.path .Values.master.httpsKeyStore.fileName -}}
               {{- if .Values.master.useSecurity }} 
@@ -286,11 +272,6 @@ spec:
               name: jenkins-secrets
               readOnly: true
             {{- end }}
-            {{- if .Values.master.installPlugins }}
-            - mountPath: /usr/share/jenkins/ref/plugins/
-              name: plugin-dir
-              readOnly: false
-            {{- end }}
             {{- if and (.Values.master.JCasC.enabled) (.Values.master.sidecars.configAutoReload.enabled) }}
             - name: sc-config-volume
               mountPath: {{ .Values.master.sidecars.configAutoReload.folder | default "/var/jenkins_home/casc_configs" | quote }}
@@ -298,8 +279,8 @@ spec:
 
 {{- if and (.Values.master.JCasC.enabled) (.Values.master.sidecars.configAutoReload.enabled) }}
         - name: jenkins-sc-config
-          image: "{{ .Values.master.sidecars.configAutoReload.image }}"
-          imagePullPolicy: {{ .Values.master.sidecars.configAutoReload.imagePullPolicy }}
+          image: "{{ .Values.images.tags.sidecar }}"
+          imagePullPolicy: "{{ .Values.images.pullPolicy }}"
           env:
             - name: POD_NAME
               valueFrom:
@@ -361,10 +342,6 @@ spec:
       - name: jenkins-secrets
         secret:
           secretName: {{ .Values.master.secretsFilesSecret }}
-      {{- end }}
-      {{- if .Values.master.installPlugins }}
-      - name: plugin-dir
-        emptyDir: {}
       {{- end }}
       - name: jenkins-home
       {{- if .Values.persistence.enabled }}

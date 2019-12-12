@@ -113,11 +113,7 @@ jenkins:
           - containerEnvVar:
               key: "JENKINS_URL"
               value: "http://{{ template "jenkins.fullname" . }}.{{ template "jenkins.namespace" . }}.svc.{{.Values.clusterZone}}:{{.Values.master.servicePort}}{{ default "" .Values.master.jenkinsUriPrefix }}"
-          {{- if .Values.agent.imageTag }}
-          image: "{{ .Values.agent.image }}:{{ .Values.agent.imageTag }}"
-          {{- else }}
-          image: "{{ .Values.agent.image }}:{{ .Values.agent.tag }}"
-          {{- end }}
+          image: "{{ .Values.images.tags.agent }}"
           name: "{{ .Values.agent.sideContainerName }}"
           privileged: "{{- if .Values.agent.privileged }}true{{- else }}false{{- end }}"
           resourceLimitCpu: {{.Values.agent.resources.limits.cpu}}
