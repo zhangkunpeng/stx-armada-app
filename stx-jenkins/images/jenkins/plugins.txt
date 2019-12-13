@@ -4,16 +4,10 @@ workflow-aggregator
 credentials-binding
 git
 gitlab-plugin
-gradle
 github-api
 github
 github-branch-source
 pipeline-github-lib
-mapdb-api
-subversion
-ssh-slaves
-matrix-auth
-pam-auth
 ldap
 email-ext
 locale
