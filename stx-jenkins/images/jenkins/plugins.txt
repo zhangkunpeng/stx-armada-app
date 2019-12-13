@@ -4,12 +4,3 @@ workflow-aggregator
 credentials-binding
 git
 gitlab-plugin
-github-api
-github
-github-branch-source
-pipeline-github-lib
-ldap
-email-ext
-locale
-localization-support
-localization-zh-cn
