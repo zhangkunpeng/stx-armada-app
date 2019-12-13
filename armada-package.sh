@@ -101,7 +101,7 @@ for chart in $charts; do
         echo "Failed to build helm chart from $ROOT_PATH/charts/$chart" >&2
         exit 1
     fi
-    mv $chart*.tgz $APP_PATH/staging/charts/$chart
+    mv $chart*.tgz $APP_PATH/staging/charts
     if [ $? -ne 0 ]; then
         echo "Failed to copy the charts from $ROOT_PATH/charts/$chart to $APP_PATH/staging/charts/$chart" >&2
         exit 1
