@@ -38,7 +38,7 @@ data:
       <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
       <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
       <clouds>
-        <org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin="kubernetes@{{ template "jenkins.kubernetes-version" . }}">
+        <org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin="kubernetes">
           <name>kubernetes</name>
           <templates>
 {{- if .Values.agent.enabled }}

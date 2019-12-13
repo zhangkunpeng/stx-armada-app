@@ -134,6 +134,12 @@ spec:
               name: jenkins-secrets
               readOnly: true
             {{- end }}
+            {{- if .Values.master.installPlugins }}
+            - mountPath: /usr/share/jenkins/ref/plugins
+              name: plugins
+            - mountPath: /var/jenkins_plugins
+              name: plugin-dir
+            {{- end }}
       containers:
         - name: jenkins
           image: "{{ .Values.images.tags.master }}"
@@ -272,6 +278,11 @@ spec:
               name: jenkins-secrets
               readOnly: true
             {{- end }}
+            {{- if .Values.master.installPlugins }}
+            - mountPath: /usr/share/jenkins/ref/plugins/
+              name: plugin-dir
+              readOnly: false
+            {{- end }}
             {{- if and (.Values.master.JCasC.enabled) (.Values.master.sidecars.configAutoReload.enabled) }}
             - name: sc-config-volume
               mountPath: {{ .Values.master.sidecars.configAutoReload.folder | default "/var/jenkins_home/casc_configs" | quote }}
@@ -342,6 +353,10 @@ spec:
       - name: jenkins-secrets
         secret:
           secretName: {{ .Values.master.secretsFilesSecret }}
+      {{- end }}
+      {{- if .Values.master.installPlugins }}
+      - name: plugin-dir
+        emptyDir: {}
       {{- end }}
       - name: jenkins-home
       {{- if .Values.persistence.enabled }}
