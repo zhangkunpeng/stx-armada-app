@@ -96,11 +96,16 @@ fi
 charts=($(cat $APP_PATH/charts))
 
 for chart in $charts; do
-cp $ROOT_PATH/charts/$chart $APP_PATH/staging/charts/$chart
-if [ $? -ne 0 ]; then
-    echo "Failed to copy the charts from $ROOT_PATH/charts/$chart to $APP_PATH/staging/charts/$chart" >&2
-    exit 1
-fi
+    helm package $ROOT_PATH/charts/$chart
+    if [ $? -ne 0 ]; then
+        echo "Failed to build helm chart from $ROOT_PATH/charts/$chart" >&2
+        exit 1
+    fi
+    mv $chart*.tgz $APP_PATH/staging/charts/$chart
+    if [ $? -ne 0 ]; then
+        echo "Failed to copy the charts from $ROOT_PATH/charts/$chart to $APP_PATH/staging/charts/$chart" >&2
+        exit 1
+    fi
 done
 
 # Merge yaml files:

@@ -27,3 +27,4 @@ locale
 localization-support
 localization-zh-cn
 configuration-as-code
+authorize-project

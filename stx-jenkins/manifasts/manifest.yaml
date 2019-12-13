@@ -51,7 +51,7 @@ data:
       slaveKubernetesNamespace: devops
       adminPassword: 99cloud@SH
       serviceType: NodePort
-      nodePort: 30001
+      nodePort: 31100
       podLabels:
         release: devops-jenkins
       ingress:
