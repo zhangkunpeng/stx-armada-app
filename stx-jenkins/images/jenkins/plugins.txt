@@ -4,11 +4,6 @@ workflow-aggregator
 credentials-binding
 git
 gitlab-plugin
-antisamy-markup-formatter
-token-macro
-resource-disposer
-ws-cleanup
-ant
 gradle
 github-api
 github
