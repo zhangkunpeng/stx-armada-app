@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gitlab.fullname" . }}
+  labels:
+    {{- include "gitlab.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gitlab.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "gitlab.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "gitlab.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        ## General GitLab Configs
+        ##
+        # This is a free-form env var that GitLab Omnibus uses to configure
+        # everything. We're passing this in from a configmap and pulling some
+        # of the values from the env vars defined below. This is done to
+        # avoid leaving secrets visible in kubectl.
+        - name: GITLAB_OMNIBUS_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              name: {{ template "gitlab.fullname" . }}
+              key: gitlab_omnibus_config
+        - name: GITLAB_ROOT_PASSWORD
+        {{- if default "" .Values.gitlabRootPassword }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gitlab.fullname" . }}
+              key: gitlab-root-password
+        {{ end }}
+        - name: EXTERNAL_URL
+          value: {{ default "" .Values.externalUrl | quote }}
+        ## DB configuration
+        ##
+        - name: DB_HOST
+          value: {{ template "gitlab.postgresql.fullname" . }}
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gitlab.fullname" . }}
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gitlab.fullname" . }}
+              key: db-password
+        - name: DB_DATABASE
+          value: {{ .Values.postgresql.postgresDatabase | quote }}
+        ## Redis configuration
+        ##
+        - name: REDIS_HOST
+          value: {{ template "gitlab.redis.fullname" . }}
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gitlab.fullname" . }}
+              key: redis-password
+        ports:
+        - name: ssh
+          containerPort: 22
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+        livenessProbe:
+          httpGet:
+            path: /help
+            port: http
+          # This pod takes a very long time to start up. Be cautious when
+          # lowering this value to avoid Pod death during startup.
+          initialDelaySeconds: 200
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /help
+            port: http
+          initialDelaySeconds: 200
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: gitlab-etc
+          mountPath: /etc/gitlab
+        - name: gitlab-data
+          mountPath: /gitlab-data
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: gitlab-etc
+      {{- if .Values.persistence.gitlabEtc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ template "gitlab.fullname" . }}-etc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      - name: gitlab-data
+      {{- if .Values.persistence.gitlabData.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ template "gitlab.fullname" . }}-data
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
