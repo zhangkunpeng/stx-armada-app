@@ -13,7 +13,6 @@ global:
 ## ref: https://hub.docker.com/r/bitnami/postgresql/tags/
 ##
 image:
-  registry: docker.io
   repository: bitnami/postgresql
   tag: 11.6.0-debian-9-r0
   ## Specify a imagePullPolicy
@@ -48,7 +47,6 @@ image:
 volumePermissions:
   enabled: true
   image:
-    registry: docker.io
     repository: bitnami/minideb
     tag: stretch
     ## Specify a imagePullPolicy
@@ -437,7 +435,6 @@ metrics:
       #     description: replication for {{ template "postgresql.fullname" . }} PostgreSQL is lagging by {{ "{{ $value }}" }} hour(s).
       #     summary: PostgreSQL replication is lagging by {{ "{{ $value }}" }} hour(s).
   image:
-    registry: docker.io
     repository: bitnami/postgres-exporter
     tag: 0.7.0-debian-9-r12
     pullPolicy: IfNotPresent
