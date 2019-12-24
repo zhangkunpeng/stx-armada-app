@@ -93,9 +93,8 @@ if [ $? -ne 0 ]; then
     echo "Failed to create ${BUILD_OUTPUT_PATH}/staging" >&2
     exit 1
 fi
-charts=($(cat $APP_PATH/charts))
 
-for chart in $charts; do
+for chart in $(cat $APP_PATH/charts 2>> /dev/null); do
     helm package $ROOT_PATH/charts/$chart
     if [ $? -ne 0 ]; then
         echo "Failed to build helm chart from $ROOT_PATH/charts/$chart" >&2

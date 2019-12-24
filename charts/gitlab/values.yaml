@@ -40,6 +40,7 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 80
+  nodePort:
   sshPort: 22
   httpsPort: 443
 
@@ -107,7 +108,6 @@ postgresql:
   postgresPassword: gitlab
   postgresDatabase: gitlab
 
-
 redis:
   name: gitlab-redis
-  redisPassword: "gitlab"
+  redisPassword: gitlab

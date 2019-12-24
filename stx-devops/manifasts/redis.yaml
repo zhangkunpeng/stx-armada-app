@@ -1,0 +1,40 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: redis
+data:
+  chart_name: redis
+  release: redis
+  namespace: devops
+  wait:
+    timeout: 600
+    labels:
+      release: devops-redis
+  test:
+    enabled: false
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - type: job
+          labels:
+            release: devops-redis
+        - type: pod
+          labels:
+            release: devops-redis
+            component: test
+  values:
+    usePassword: true
+    password: gitlab
+    fullnameOverride: devops-redis
+
+  source:
+    type: tar
+    location: http://172.17.0.1:8080/helm_charts/starlingx/redis-10.2.1.tgz
+    subpath: redis
+    reference: master
+  dependencies: []
+

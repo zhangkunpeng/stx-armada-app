@@ -1,0 +1,40 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: postgresql
+data:
+  chart_name: postgresql
+  release: postgresql
+  namespace: devops
+  wait:
+    timeout: 600
+    labels:
+      release: devops-postgresql
+  test:
+    enabled: false
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - type: job
+          labels:
+            release: devops-postgresql
+        - type: pod
+          labels:
+            release: devops-postgresql
+            component: test
+  values:
+    postgresqlUsername: postgres
+    postgresqlPassword: gitlab
+    postgresqlDatabase: gitlab
+    fullnameOverride: devops-postgresql
+
+  source:
+    type: tar
+    location: http://172.17.0.1:8080/helm_charts/starlingx/postgresql-8.1.0.tgz
+    subpath: postgresql
+    reference: master
+  dependencies: []

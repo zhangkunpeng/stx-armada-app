@@ -1,0 +1,92 @@
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: devops-armada-manifest
+data:
+  release_prefix: devops
+  chart_groups:
+    - jenkins
+    - gitlab
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: jenkins
+data:
+  description: "Deploy Jenkins"
+  sequenced: true
+  chart_group:
+    - jenkins
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: jenkins
+data:
+  chart_name: jenkins
+  release: jenkins
+  namespace: devops
+  wait:
+    timeout: 600
+    labels:
+      release: devops-jenkins
+  test:
+    enabled: false
+  install:
+    no_hooks: false
+  upgrade:
+    no_hooks: false
+    pre:
+      delete:
+        - type: job
+          labels:
+            release: devops-jenkins
+        - type: pod
+          labels:
+            release: devops-jenkins
+            component: test
+  values:
+    master:
+      namespaceOverride: devops
+      slaveKubernetesNamespace: devops
+      adminPassword: 99cloud@SH
+      serviceType: NodePort
+      nodePort: 31100
+      podLabels:
+        release: devops-jenkins
+      ingress:
+        enabled: false
+        # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
+        apiVersion: "networking.k8s.io/v1beta1"
+        labels: {}
+        annotations:
+          kubernetes.io/ingress.class: nginx
+          nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
+          nginx.ingress.kubernetes.io/rewrite-target: /
+          nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+        # kubernetes.io/ingress.class: nginx
+        # kubernetes.io/tls-acme: "true"
+        # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
+        # path: "/jenkins"
+        # configures the hostname e.g. jenkins.example.com
+        hostName: jenkins.devops.svc.cluster.local
+  source:
+    type: tar
+    location: http://172.17.0.1:8080/helm_charts/starlingx/jenkins-19.8.0.tgz
+    subpath: jenkins
+    reference: master
+  dependencies: []
+
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: gitlab
+data:
+  description: "Deploy Gitlab"
+  sequenced: true
+  chart_group:
+    - redis
+    - postgresql
+    - gitlab
